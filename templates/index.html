@@ -113,7 +113,7 @@
             position: absolute; width: 100%; height: 100%; top: 0; left: 0;
             display: flex; justify-content: center; align-items: center;
             background-position: center; background-size: cover; background-repeat: no-repeat;
-            background-color: #060a17; /* Bulletproof color fallback */
+            background-color: #060a17;
             padding: 40px; opacity: 0; visibility: hidden;
             transform: scale(1.1) translateY(40px) rotateX(8deg);
             filter: blur(25px);
@@ -185,7 +185,7 @@
         .stadium-warp-gate.active { display: flex; opacity: 1; }
         .stadium-jumbotron-frame {
             width: 94vw; max-width: 1120px; height: 85vh;
-            background-color: #101524;
+            background-size: cover; background-position: center;
             border-radius: 32px; border: 4px solid var(--neon-blue);
             display: flex; flex-direction: column; justify-content: flex-end; align-items: center;
             padding-bottom: 50px; box-shadow: 0 0 70px rgba(0,255,255,0.5);
@@ -231,7 +231,7 @@
     </div>
 
     <div class="viewport-platform">
-        <div id="home-platform" class="adventure-plane active">
+        <div id="home-platform" class="adventure-plane active" style="background-image: url('/images/dashboard_portal.png');">
             <div class="glass-terminal-card" style="max-width: 850px;">
                 <h2>OPERATIONAL COMMAND PLATFORM</h2>
                 <p class="mission-ticker-log">Enterprise databanks synchronized. Choose an operational telemetry diagnostic parameter node above to deploy challenges.</p>
@@ -241,7 +241,7 @@
             </div>
         </div>
 
-        <div id="math-platform" class="adventure-plane">
+        <div id="math-platform" class="adventure-plane" style="background-image: url('/images/logic_lock.png');">
             <div class="glass-terminal-card">
                 <h2 id="math-headline-string">LOGIC RECALIBRATION ENGINE</h2>
                 <p class="mission-ticker-log">Select calculation variables to execute procedural arithmetic algorithmic puzzles!</p>
@@ -259,7 +259,7 @@
             </div>
         </div>
 
-        <div id="english-platform" class="adventure-plane">
+        <div id="english-platform" class="adventure-plane" style="background-image: url('/images/galactic_storybook.png');">
             <div class="glass-terminal-card">
                 <h2>LITERACY SYNC LAB</h2>
                 <p class="mission-ticker-log">Align textual character arrays cleanly to avoid core structural storage faults!</p>
@@ -268,7 +268,7 @@
             </div>
         </div>
 
-        <div id="gk-platform" class="adventure-plane">
+        <div id="gk-platform" class="adventure-plane" style="background-image: url('/images/space_ranger.png');">
             <div class="glass-terminal-card">
                 <h2>RADAR ENVIRONMENT VIEWPORTS</h2>
                 <p class="mission-ticker-log">Cross-reference active imagery display sensors against structural system coordinates!</p>
@@ -280,7 +280,7 @@
 </div>
 
 <div id="stadium-curtain-overlay" class="stadium-warp-gate">
-    <div class="stadium-jumbotron-frame">
+    <div class="stadium-jumbotron-frame" id="stadium-bg-node" style="background-image: url('/images/rockstar_champion.png');">
         <div class="glass-terminal-card" style="max-width: 560px; margin-bottom: 30px; background: rgba(1,2,4,0.96); border-color: var(--neon-blue);">
             <h1 style="font-family:'Orbitron'; font-size: 2.8rem; color:var(--gold); text-shadow:0 0 25px var(--gold);">ARENA DOMINATED!</h1>
             <p style="font-size:1.4rem; margin:15px 0 30px 0; color:#cbd5e1; font-family:'Quicksand';">Captain Atharva cleared the target sector data matrix flawlessly!</p>
@@ -385,7 +385,7 @@
 
     /* ==========================================================================
        SESSION STATE FACTORY
-       ========================================================================== */
+       ========================================================================= */
     class StateManager {
         constructor() { this.score = 0; this.streak = 0; this.currentRank = "SPACE CADET"; }
         registerSuccess(points) {
@@ -498,7 +498,7 @@
             const boot = document.getElementById('boot-sequence');
             boot.style.opacity = '0'; boot.style.transform = 'scale(1.05) translateY(-30px)';
             setTimeout(() => boot.style.display = 'none', 600);
-        }, 2500); // 2.5s clean load timer matching progress animation lines
+        }, 2500);
     });
 </script>
 
