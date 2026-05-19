@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Captain Atharva: Quantum Arcade Core OS v10.0</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Fredoka+One&family=Share+Tech+Mono&family=Quicksand:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght=500;700;900&family=Fredoka+One&family=Share+Tech+Mono&family=Quicksand:wght=700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         :root {
@@ -32,7 +32,7 @@
         .crt-scanlines {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
-            background-size: 100% 4px; z-index: 999999; pointer-events: none; opacity: 0.22;
+            background-size: 100% 4px; z-index: 999999; pointer-events: none; opacity: 0.15;
         }
 
         #boot-sequence {
@@ -102,10 +102,14 @@
         .stat-capsule {
             font-family: 'Orbitron', sans-serif; font-size: 1.1rem; font-weight: 900;
             padding: 8px 22px; border-radius: 50px; background: rgba(0,0,0,0.4);
+            transition: all 0.3s ease;
         }
         .stat-capsule.power { color: var(--gold); border: 2px solid var(--gold); box-shadow: 0 0 12px rgba(255,215,0,0.15); }
         .stat-capsule.streak { color: var(--neon-pink); border: 2px solid var(--neon-pink); box-shadow: 0 0 12px rgba(255,0,127,0.15); }
+        .stat-capsule.streak.burning { background: var(--neon-pink); color: #000; box-shadow: 0 0 25px var(--neon-pink); animation: pulseDelta 0.6s infinite alternate; }
         .stat-capsule.rank { color: var(--neon-green); border: 2px solid var(--neon-green); box-shadow: 0 0 12px rgba(57,255,20,0.15); }
+
+        @keyframes pulseDelta { 0% { transform: scale(1); } 100% { transform: scale(1.05); } }
 
         .viewport-platform { flex: 1; position: relative; }
 
@@ -139,17 +143,17 @@
         }
 
         .glass-terminal-card h2 {
-            font-family: 'Fredoka One', cursive; font-size: 2.8rem; letter-spacing: 0.5px;
+            font-family: 'Fredoka One', cursive; font-size: 3.2rem; letter-spacing: 0.5px;
             color: var(--neon-blue); text-shadow: 0 0 15px rgba(0,255,255,0.3); margin-bottom: 12px;
         }
         .mission-ticker-log { font-size: 1.35rem; color: #cbd5e1; margin-bottom: 25px; font-weight: 500; }
 
         .quantum-equation-panel {
-            font-family: 'Orbitron', sans-serif; font-size: 5.2rem; font-weight: 900;
+            font-family: 'Orbitron', sans-serif; font-size: 5.5rem; font-weight: 900;
             color: #ffeb3b; margin: 20px 0; text-shadow: 0 0 30px rgba(255,235,59,0.5); letter-spacing: 3px;
         }
         .core-input-node {
-            width: 200px; padding: 12px; font-size: 3rem; border-radius: 20px;
+            width: 200px; padding: 12px; font-size: 3.5rem; border-radius: 20px;
             border: 3px solid #334155; text-align: center; font-family: 'Orbitron', sans-serif;
             background: #010204; color: var(--neon-blue); outline: none;
             box-shadow: inset 0 0 20px rgba(0,255,255,0.15); transition: all 0.3s;
@@ -158,23 +162,27 @@
 
         .execution-fire-btn {
             background: linear-gradient(135deg, #00f2fe, #4facfe); color: #020206;
-            border: none; padding: 20px 60px; font-size: 1.4rem; font-family: 'Orbitron', sans-serif;
+            border: none; padding: 20px 60px; font-size: 1.5rem; font-family: 'Orbitron', sans-serif;
             font-weight: 900; border-radius: 50px; cursor: pointer; margin-top: 25px;
             box-shadow: 0 0 25px rgba(79,172,254,0.5); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             text-transform: uppercase; letter-spacing: 1px;
         }
-        .execution-fire-btn:hover { transform: scale(1.04) translateY(-2px); box-shadow: 0 0 45px var(--neon-blue); }
+        .execution-fire-btn:hover { transform: scale(1.05) translateY(-2px); box-shadow: 0 0 45px var(--neon-blue); }
 
         .interactive-node-matrix { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%; margin-top: 25px; }
+        
         .arcade-matrix-block {
-            background: rgba(15, 23, 42, 0.45); color: white; border: 2px solid #23324a;
-            padding: 24px; font-size: 1.5rem; font-weight: 700; border-radius: 20px;
-            cursor: pointer; transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94); font-family: 'Quicksand', sans-serif;
+            background: rgba(15, 23, 42, 0.6); color: white; border: 2px solid #23324a;
+            padding: 28px; font-size: 1.8rem; font-weight: 900; border-radius: 24px;
+            cursor: pointer; transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            font-family: 'Fredoka One', cursive; text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
         }
         .arcade-matrix-block:hover {
             background: linear-gradient(135deg, var(--neon-pink), #e6005c); border-color: white;
-            box-shadow: 0 0 30px var(--neon-pink); transform: translateY(-4px);
+            box-shadow: 0 0 35px var(--neon-pink); transform: translateY(-6px) scale(1.02);
         }
+        .arcade-matrix-block:active { transform: translateY(-2px) scale(0.98); }
 
         .stadium-warp-gate {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -193,20 +201,20 @@
         }
         .stadium-warp-gate.active .stadium-jumbotron-frame { transform: scale(1); }
 
-        #core-toaster-notification {
-            position: fixed; bottom: 35px; right: 35px; background: rgba(2, 6, 23, 0.96);
-            border: 2px solid var(--neon-green); border-radius: 16px; padding: 20px 35px;
-            display: flex; align-items: center; gap: 15px; z-index: 100000;
-            box-shadow: 0 15px 40px rgba(0,255,0,0.2); transform: translateY(150px);
-            opacity: 0; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        #score-burst {
+            position: fixed; top: 15px; left: 50%; transform: translateX(-50%) scale(0.5);
+            font-family: 'Orbitron'; font-weight: 900; font-size: 2.5rem;
+            color: var(--neon-green); pointer-events: none; opacity: 0;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 5000;
         }
-        #core-toaster-notification.visible { transform: translateY(0); opacity: 1; }
+        #score-burst.trigger { opacity: 1; transform: translateX(-50%) scale(1) translateY(40px); }
     </style>
 </head>
 <body>
 
 <div class="crt-scanlines"></div>
 <canvas id="matrix-particle-canvas"></canvas>
+<div id="score-burst">+10 STARS!</div>
 
 <div id="boot-sequence">
     <div class="boot-header">INITIALIZING SYSTEMS DECK</div>
@@ -225,7 +233,7 @@
         </div>
         <div class="reactive-stats-group">
             <div class="stat-capsule rank">🚀 RANK: <span id="rank-node">SPACE CADET</span></div>
-            <div class="stat-capsule streak">🔥 STREAK: <span id="streak-node">0</span></div>
+            <div class="stat-capsule streak" id="streak-hud">🔥 STREAK: <span id="streak-node">0</span></div>
             <div class="stat-capsule power">🌟 STARS: <span id="score-node">0</span></div>
         </div>
     </div>
@@ -235,8 +243,8 @@
             <div class="glass-terminal-card" style="max-width: 850px;">
                 <h2>OPERATIONAL COMMAND PLATFORM</h2>
                 <p class="mission-ticker-log">Enterprise databanks synchronized. Choose an operational telemetry diagnostic parameter node above to deploy challenges.</p>
-                <div style="background: rgba(0,255,255,0.05); padding: 40px; border-radius: 18px; border: 2px dashed var(--neon-blue);">
-                     <h3 style="font-family: 'Orbitron'; color: var(--neon-blue);">READY FOR FLIGHT</h3>
+                <div style="background: rgba(0,255,255,0.05); padding: 40px; border-radius: 18px; border: 2px dashed var(--neon-blue); cursor:pointer;" onclick="window.ArcadeInstanceEngine.executePlatformPlaneWarp('math')">
+                     <h3 style="font-family: 'Orbitron'; color: var(--neon-blue); letter-spacing:2px; animation: pulseDelta 0.8s infinite alternate;">👉 TAP HERE TO START MISSION 👈</h3>
                 </div>
             </div>
         </div>
@@ -263,7 +271,7 @@
             <div class="glass-terminal-card">
                 <h2>LITERACY SYNC LAB</h2>
                 <p class="mission-ticker-log">Align textual character arrays cleanly to avoid core structural storage faults!</p>
-                <h3 id="english-text-prompt" style="font-family:'Orbitron'; font-size:1.8rem; color:#ffeb3b; margin-bottom:35px; text-shadow:0 0 15px rgba(255,235,59,0.3);">---</h3>
+                <h3 id="english-text-prompt" style="font-family:'Orbitron'; font-size:2.2rem; color:#ffeb3b; margin-bottom:35px; text-shadow:0 0 15px rgba(255,235,59,0.3);">---</h3>
                 <div class="interactive-node-matrix" id="english-response-grid"></div>
             </div>
         </div>
@@ -272,7 +280,7 @@
             <div class="glass-terminal-card">
                 <h2>RADAR ENVIRONMENT VIEWPORTS</h2>
                 <p class="mission-ticker-log">Cross-reference active imagery display sensors against structural system coordinates!</p>
-                <h3 id="gk-text-prompt" style="font-family:'Orbitron'; font-size:1.6rem; color:#ffeb3b; margin-bottom:35px; text-shadow:0 0 15px rgba(255,235,59,0.3);">---</h3>
+                <h3 id="gk-text-prompt" style="font-family:'Orbitron'; font-size:2rem; color:#ffeb3b; margin-bottom:35px; text-shadow:0 0 15px rgba(255,235,59,0.3);">---</h3>
                 <div class="interactive-node-matrix" id="gk-response-grid"></div>
             </div>
         </div>
@@ -299,22 +307,49 @@
 
 <script>
     /* ==========================================================================
-       EMBEDDED KNOWLEDGE DATABASES
+       EMBEDDED EXPANDED DATA STRUCTURES
        ========================================================================== */
     const ARCADE_QUESTION_DATABASE = {
         phonics: [
             { query: "Which word rhymes with the flying 'CAT'?", choices: ["BAT", "DOG", "SUN", "PIG"], target: "BAT", reward: 10 },
+            { query: "Which word rhymes with the hot blazing 'SUN'?", choices: ["RUN", "BED", "LOG", "CAT"], target: "RUN", reward: 10 },
+            { query: "Which word rhymes with a red jumping 'FOX'?", choices: ["BOX", "HEN", "PIG", "SIT"], target: "BOX", reward: 10 },
+            { query: "Which word rhymes with the sleeping 'BEAR'?", choices: ["CHAIR", "FISH", "DUCK", "TREE"], target: "CHAIR", reward: 10 },
+            { query: "Which word rhymes with the cold wet 'RAIN'?", choices: ["TRAIN", "BOAT", "COAT", "STAR"], target: "TRAIN", reward: 10 },
+            { query: "Which word rhymes with a small baking 'CAKE'?", choices: ["LAKE", "MOON", "BIRD", "FROG"], target: "LAKE", reward: 10 },
             { query: "Find the missing starting sound logic: '____-P-P-L-E'", choices: ["A", "B", "M", "T"], target: "A", reward: 10 },
+            { query: "Find the missing sound string for a sailing '____-O-A-T'", choices: ["B", "S", "R", "P"], target: "B", reward: 10 },
+            { query: "Find the missing sound for a swimming '____-I-S-H'", choices: ["F", "L", "M", "D"], target: "F", reward: 10 },
+            { query: "Find the missing sound for a morning '____-I-L-K'", choices: ["M", "B", "H", "G"], target: "M", reward: 10 },
+            { query: "Find the missing sound for a fast racing '____-R-A-I-N'", choices: ["T", "P", "S", "C"], target: "T", reward: 10 },
             { query: "Identify the high-frequency sight word block: 'T-H-____-Y'", choices: ["E", "A", "O", "I"], target: "E", reward: 10 },
+            { query: "Choose the digraph blend that starts the word '____-I-P-S' (Yum!)", choices: ["CH", "SH", "TH", "WH"], target: "CH", reward: 15 },
+            { query: "Choose the digraph blend that starts the sailing '____-I-P'", choices: ["SH", "CH", "TH", "WH"], target: "SH", reward: 15 },
+            { query: "Choose the blend that starts the giant night '____-W-A-L-E'", choices: ["WH", "SH", "CH", "PH"], target: "WH", reward: 15 },
+            { query: "What blend makes the sound at the start of a counting '____-R-E-E'?", choices: ["TH", "CH", "SH", "WH"], target: "TH", reward: 10 },
             { query: "Atharva is holding a glowing, magical ____ book!", choices: ["storybook", "math", "cooking", "music"], target: "storybook", reward: 15 },
             { query: "There are friendly green ____ floating inside space labs!", choices: ["aliens", "bicycles", "kittens", "trains"], target: "aliens", reward: 15 },
-            { query: "Atharva is wearing a cool, sharp blue ____ cap!", choices: ["cap", "shoe", "sock", "belt"], target: "cap", reward: 10 }
+            { query: "Atharva is wearing a cool, sharp blue ____ cap!", choices: ["cap", "shoe", "sock", "belt"], target: "cap", reward: 10 },
+            { query: "Captain Atharva fires a blazing neon ____ beam to clear space debris!", choices: ["laser", "water", "paint", "ice"], target: "laser", reward: 15 },
+            { query: "Atharva jumps into his lightning-fast ____ ship to explore Mars!", choices: ["rocket", "car", "wagon", "bicycle"], target: "rocket", reward: 15 }
         ],
         telemetry: [
             { query: "Which tall, long-necked mammal has yellow spots?", choices: ["Giraffe", "Elephant", "Zebra", "Cheetah"], target: "Giraffe", reward: 10 },
-            { query: "What blue planet are we investigating right now?", choices: ["Earth", "Mars", "Jupiter", "Mercury"], target: "Earth", reward: 10 },
             { query: "Which giant animal has floppy ears and a huge trunk?", choices: ["Elephant", "Rhino", "Hippo", "Giraffe"], target: "Elephant", reward: 10 },
-            { query: "What hot, giant fire star sits at the center of our solar system?", choices: ["The Sun", "The Moon", "Mars", "Pluto"], target: "The Sun", reward: 15 }
+            { query: "Which fast wild cat has sharp black racing stripes?", choices: ["Tiger", "Lion", "Bear", "Deer"], target: "Tiger", reward: 10 },
+            { query: "Which black and white bird swims fast but cannot fly?", choices: ["Penguin", "Eagle", "Parrot", "Duck"], target: "Penguin", reward: 10 },
+            { query: "Which clever animal loves to swing on trees and eat bananas?", choices: ["Monkey", "Tiger", "Lion", "Hippo"], target: "Monkey", reward: 10 },
+            { query: "Which ocean creature has eight long tentacles?", choices: ["Octopus", "Shark", "Whale", "Dolphin"], target: "Octopus", reward: 10 },
+            { query: "Which animal hops around holding its baby inside a belly pouch?", choices: ["Kangaroo", "Koala", "Rabbit", "Bear"], target: "Kangaroo", reward: 15 },
+            { query: "What blue planet are we investigating right now?", choices: ["Earth", "Mars", "Jupiter", "Mercury"], target: "Earth", reward: 10 },
+            { query: "What hot, giant fire star sits at the center of our solar system?", choices: ["The Sun", "The Moon", "Mars", "Pluto"], target: "The Sun", reward: 15 },
+            { query: "Which red, dusty planet is known as the Red Planet?", choices: ["Mars", "Venus", "Neptune", "Saturn"], target: "Mars", reward: 10 },
+            { query: "What bright rock loops around Earth and glows in the night sky?", choices: ["The Moon", "The Sun", "A Comet", "An Asteroid"], target: "The Moon", reward: 10 },
+            { query: "Which giant planet is famous for having beautiful ice rings spinning around it?", choices: ["Saturn", "Jupiter", "Mars", "Earth"], target: "Saturn", reward: 15 },
+            { query: "What cold, white frozen crystal falls from the winter sky?", choices: ["Snow", "Rain", "Sand", "Leaves"], target: "Snow", reward: 10 },
+            { query: "What colorful arc appears in the sky after a fresh rain storm?", choices: ["Rainbow", "Lightning", "Cloud", "Meteor"], target: "Rainbow", reward: 10 },
+            { query: "What green plants grow on trees to soak up bright sunlight?", choices: ["Leaves", "Flowers", "Apples", "Roots"], target: "Leaves", reward: 10 },
+            { query: "What do bees collect from flowers to make sweet food in their hives?", choices: ["Nectar", "Water", "Seeds", "Mud"], target: "Nectar", reward: 15 }
         ]
     };
 
@@ -385,44 +420,48 @@
 
     /* ==========================================================================
        SESSION STATE FACTORY
-       ========================================================================= */
+       ========================================================================== */
     class StateManager {
         constructor() { this.score = 0; this.streak = 0; this.currentRank = "SPACE CADET"; }
         registerSuccess(points) {
-            this.streak++; let mult = this.streak >= 5 ? 2 : 1; this.score += (points * mult);
+            this.streak++; let mult = this.streak >= 4 ? 2 : 1; this.score += (points * mult);
             let prevRank = this.currentRank;
             if(this.score >= 160) this.currentRank = "COSMIC SUPERHERO";
             else if(this.score >= 90) this.currentRank = "SOCCER ALL-STAR";
             else if(this.score >= 40) this.currentRank = "GALAXY KNIGHT";
-            return { score: this.score, streak: this.streak, rankChanged: prevRank !== this.currentRank, rank: this.currentRank };
+            return { score: this.score, streak: this.streak, rankChanged: prevRank !== this.currentRank, rank: this.currentRank, multiplier: mult };
         }
         registerFailure() { this.streak = 0; return { streak: 0 }; }
     }
 
     /* ==========================================================================
-       MASTER CORE ORCHESTRATION ENGINE
+       MASTER CORE ORCHESTRATION ENGINE (INFINITE RANDOM LOOPS)
        ========================================================================== */
     class CoreGameEngine {
         constructor() {
             this.stateManager = new StateManager(); this.audio = new AudioSynthController(); this.graphics = new ParticleEngine('matrix-particle-canvas');
-            this.mathCategory = 'add'; this.mathTarget = 0; this.phonicsIdx = 0; this.telemetryIdx = 0;
+            this.mathCategory = 'add'; this.mathTarget = 0;
+            this.currentPhonicsQuestion = null; this.currentTelemetryQuestion = null;
             document.getElementById('math-input-response-box').addEventListener('keypress', (e) => { if(e.key === 'Enter') this.processMathSubmission(); });
             this.startLoop();
         }
         startLoop() { const tick = () => { this.graphics.render(); requestAnimationFrame(tick); }; requestAnimationFrame(tick); }
+        
         executePlatformPlaneWarp(id) {
             this.graphics.setTheme(id);
             document.querySelectorAll('.adventure-plane').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.console-trigger').forEach(b => b.classList.remove('active'));
             const dest = document.getElementById(`${id}-platform`); if(dest) { dest.style.display = 'flex'; setTimeout(() => dest.classList.add('active'), 40); }
-            event.currentTarget.classList.add('active');
-            if(id === 'math') this.generateMath(); if(id === 'english') this.generatePhonics(); if(id === 'gk') this.generateTelemetry();
+            if(event && event.currentTarget) event.currentTarget.classList.add('active');
+            if(id === 'math') this.generateMath(); if(id === 'english') this.generatePhonics(true); if(id === 'gk') this.generateTelemetry(true);
         }
+
         setMathOperationMode(op) {
             this.mathCategory = op;
             document.querySelectorAll('#math-platform .tab-matrix-cluster .console-trigger').forEach(b => b.classList.remove('active'));
             document.getElementById(`m-${op}`).classList.add('active'); this.generateMath();
         }
+
         generateMath() {
             document.getElementById('math-input-response-box').value = '';
             let v1 = Math.floor(Math.random() * 10) + 4, v2 = Math.floor(Math.random() * 6) + 1;
@@ -431,48 +470,109 @@
             else if(this.mathCategory === 'mul') { v1 = Math.floor(Math.random()*4)+2; document.getElementById('math-display-equation').innerText = `${v1} × ${v2} = ?`; this.mathTarget = v1 * v2; }
             else { this.mathTarget = Math.floor(Math.random()*4)+1; v1 = v2 * this.mathTarget; document.getElementById('math-display-equation').innerText = `${v1} ÷ ${v2} = ?`; }
         }
+
         processMathSubmission() {
             if(parseInt(document.getElementById('math-input-response-box').value) === this.mathTarget) this.success(10); else this.failure();
         }
-        generatePhonics() {
-            let q = ARCADE_QUESTION_DATABASE.phonics[this.phonicsIdx]; document.getElementById('english-text-prompt').innerText = q.query;
+
+        generatePhonics(isNewWarp = false) {
+            const pool = ARCADE_QUESTION_DATABASE.phonics;
+            let nextQ;
+            do {
+                nextQ = pool[Math.floor(Math.random() * pool.length)];
+            } while (this.currentPhonicsQuestion && nextQ.query === this.currentPhonicsQuestion.query && pool.length > 1);
+            
+            this.currentPhonicsQuestion = nextQ;
+            document.getElementById('english-text-prompt').innerText = this.currentPhonicsQuestion.query;
+            
+            let shuffledChoices = [...this.currentPhonicsQuestion.choices].sort(() => Math.random() - 0.5);
             let g = document.getElementById('english-response-grid'); g.innerHTML = '';
-            q.choices.forEach(c => g.innerHTML += `<button class="arcade-matrix-block" onclick="window.ArcadeInstanceEngine.processPhonics('${c}')">${c}</button>`);
+            shuffledChoices.forEach(c => {
+                g.innerHTML += `<button class="arcade-matrix-block" onclick="window.ArcadeInstanceEngine.processPhonics('${c}')">${c}</button>`;
+            });
         }
+
         processPhonics(ans) {
-            let q = ARCADE_QUESTION_DATABASE.phonics[this.phonicsIdx];
-            if(ans === q.target) { this.phonicsIdx = (this.phonicsIdx + 1) % ARCADE_QUESTION_DATABASE.phonics.length; this.success(q.reward); } else this.failure();
+            if(ans === this.currentPhonicsQuestion.target) { this.success(this.currentPhonicsQuestion.reward); } else this.failure();
         }
-        generateTelemetry() {
-            let q = ARCADE_QUESTION_DATABASE.telemetry[this.telemetryIdx]; document.getElementById('gk-text-prompt').innerText = q.query;
+
+        generateTelemetry(isNewWarp = false) {
+            const pool = ARCADE_QUESTION_DATABASE.telemetry;
+            let nextQ;
+            do {
+                nextQ = pool[Math.floor(Math.random() * pool.length)];
+            } while (this.currentTelemetryQuestion && nextQ.query === this.currentTelemetryQuestion.query && pool.length > 1);
+            
+            this.currentTelemetryQuestion = nextQ;
+            document.getElementById('gk-text-prompt').innerText = this.currentTelemetryQuestion.query;
+            
+            let shuffledChoices = [...this.currentTelemetryQuestion.choices].sort(() => Math.random() - 0.5);
             let g = document.getElementById('gk-response-grid'); g.innerHTML = '';
-            q.choices.forEach(c => g.innerHTML += `<button class="arcade-matrix-block" onclick="window.ArcadeInstanceEngine.processTelemetry('${c}')">${c}</button>`);
+            shuffledChoices.forEach(c => {
+                g.innerHTML += `<button class="arcade-matrix-block" onclick="window.ArcadeInstanceEngine.processTelemetry('${c}')">${c}</button>`;
+            });
         }
+
         processTelemetry(ans) {
-            let q = ARCADE_QUESTION_DATABASE.telemetry[this.telemetryIdx];
-            if(ans === q.target) { this.telemetryIdx = (this.telemetryIdx + 1) % ARCADE_QUESTION_DATABASE.telemetry.length; this.success(q.reward); } else this.failure();
+            if(ans === this.currentTelemetryQuestion.target) { this.success(this.currentTelemetryQuestion.reward); } else this.failure();
         }
+
         success(pts) {
             let res = this.stateManager.registerSuccess(pts); this.audio.playSuccessChime();
-            document.getElementById('score-node').innerText = res.score; document.getElementById('streak-node').innerText = res.streak;
-            confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
-            if(res.rankChanged) { document.getElementById('rank-node').innerText = res.rank; this.toast(`PROMOTED TO ${res.rank}!`); }
-            if(res.score % 40 === 0) { this.audio.playLevelUpFanfare(); document.getElementById('stadium-curtain-overlay').classList.add('active'); }
-            else this.refreshView();
+            
+            document.getElementById('score-node').innerText = res.score;
+            document.getElementById('streak-node').innerText = res.streak;
+            
+            const streakHud = document.getElementById('streak-hud');
+            if(res.streak >= 4) { streakHud.classList.add('burning'); }
+            
+            const burst = document.getElementById('score-burst');
+            let addedPoints = pts * res.multiplier;
+            burst.innerText = `+${addedPoints} STARS! ${res.multiplier > 1 ? '🔥 X2' : ''}`;
+            burst.className = "trigger";
+            setTimeout(() => { burst.className = ""; }, 600);
+
+            confetti({ particleCount: 140, spread: 70, origin: { y: 0.65 } });
+            
+            if(res.rankChanged) { 
+                document.getElementById('rank-node').innerText = res.rank; 
+                this.toast(`RANK ELEVATED: ${res.rank}!`); 
+            }
+            
+            if(res.score > 0 && res.score % 40 === 0) { 
+                this.audio.playLevelUpFanfare(); 
+                document.getElementById('stadium-curtain-overlay').classList.add('active'); 
+            } else {
+                this.refreshView();
+            }
         }
+
         failure() {
             let res = this.stateManager.registerFailure(); this.audio.playFailureTone();
-            document.getElementById('streak-node').innerText = res.streak; alert("❌ SYSTEM EXCEPTION! Try again."); this.refreshView();
+            document.getElementById('streak-node').innerText = res.streak;
+            document.getElementById('streak-hud').classList.remove('burning');
+            
+            this.toast("❌ SHIELD DAMAGE! Core Recalibrating...");
+            this.refreshView();
         }
+
         refreshView() {
             const active = document.querySelector('.adventure-plane.active').id;
-            if(active === 'math-platform') this.generateMath(); if(active === 'english-platform') this.generatePhonics(); if(active === 'gk-platform') this.generateTelemetry();
+            if(active === 'math-platform') this.generateMath(); 
+            if(active === 'english-platform') this.generatePhonics(); 
+            if(active === 'gk-platform') this.generateTelemetry();
         }
+
         toast(msg) {
-            const t = document.getElementById('core-toaster-notification'); document.getElementById('toast-message-body').innerText = msg;
-            t.classList.add('visible'); setTimeout(() => t.classList.remove('visible'), 4000);
+            const t = document.getElementById('core-toaster-notification'); 
+            document.getElementById('toast-message-body').innerText = msg;
+            t.classList.add('visible'); setTimeout(() => t.classList.remove('visible'), 3500);
         }
-        closeStadiumOverlayPortal() { document.getElementById('stadium-curtain-overlay').classList.remove('active'); this.refreshView(); }
+
+        closeStadiumOverlayPortal() { 
+            document.getElementById('stadium-curtain-overlay').classList.remove('active'); 
+            this.refreshView(); 
+        }
     }
 
     /* ==========================================================================
