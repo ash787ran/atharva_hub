@@ -1,5 +1,5 @@
 # app.py
-from fastapi import FastAPI, Request, HTTPException
+from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -18,7 +18,7 @@ app = FastAPI(
 # Operational Absolute Path Validations
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# SMART PATH DECTECTOR: Checks if directories are sitting next to app.py or nested inside a subfolder
+# SMART PATH DETECTOR: Checks if directories are sitting next to app.py or nested inside a subfolder
 def locate_directory(dir_name):
     primary_path = os.path.join(BASE_DIR, dir_name)
     nested_path = os.path.join(BASE_DIR, "atharva_hub", dir_name)
@@ -42,7 +42,8 @@ logger.info(f"Targeting static script asset path: {STATIC_DIR}")
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 app.mount("/images", StaticFiles(directory=IMAGES_DIR), name="images")
 
-templates = Jinja2Templates(directory=TEMPLATES_DIR)
+# FIX: Explicitly wrapped inside a list sequence to prevent Starlette/FastAPI from hitting the tuple hash dictionary error on newer runtimes
+templates = Jinja2Templates(directory=[TEMPLATES_DIR])
 
 class TelemetryPayload(BaseModel):
     pilot_name: str
