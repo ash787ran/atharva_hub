@@ -32,7 +32,6 @@ def locate_directory(dir_name):
     for path in options:
         if os.path.exists(path) and os.path.isdir(path):
             logger.info(f"🎨 ASSET ALIGNMENT: Mapped '{dir_name}' to verified path: {path}")
-            # Log any files found inside for deep diagnosis
             files = os.listdir(path)
             logger.info(f"📂 Contents found inside '{dir_name}': {files[:5]} (Total: {len(files)} files)")
             return path
