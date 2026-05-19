@@ -7,29 +7,38 @@ from pydantic import BaseModel
 import os
 import logging
 
-# Configure enterprise-grade logging output channels
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("QuantumArcadeEngine")
 
 app = FastAPI(
     title="Atharva Quantum Arcade Core Engine",
-    description="Multi-Threaded Production Gaming OS Architecture",
     version="10.0.0"
 )
 
 # Operational Absolute Path Validations
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-STATIC_DIR = os.path.join(BASE_DIR, "static")
-TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
-IMAGES_DIR = os.path.join(BASE_DIR, "images")
 
-# Force creation of structural path layers if missing
-for path_dir in [STATIC_DIR, TEMPLATES_DIR, IMAGES_DIR]:
-    if not os.path.exists(path_dir):
-        os.makedirs(path_dir)
-        logger.info(f"Initialized critical directory sector: {path_dir}")
+# SMART PATH DECTECTOR: Checks if directories are sitting next to app.py or nested inside a subfolder
+def locate_directory(dir_name):
+    primary_path = os.path.join(BASE_DIR, dir_name)
+    nested_path = os.path.join(BASE_DIR, "atharva_hub", dir_name)
+    
+    if os.path.exists(primary_path):
+        return primary_path
+    elif os.path.exists(nested_path):
+        return nested_path
+    else:
+        os.makedirs(primary_path)
+        return primary_path
 
-# Mount static asset arrays with cache-control headers
+STATIC_DIR = locate_directory("static")
+TEMPLATES_DIR = locate_directory("templates")
+IMAGES_DIR = locate_directory("images")
+
+logger.info(f"Targeting template framework path: {TEMPLATES_DIR}")
+logger.info(f"Targeting static script asset path: {STATIC_DIR}")
+
+# Mount static asset arrays safely
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 app.mount("/images", StaticFiles(directory=IMAGES_DIR), name="images")
 
@@ -46,13 +55,26 @@ class TelemetryPayload(BaseModel):
 async def load_master_console_viewport(request: Request):
     """Serve the central high-fidelity fullscreen graphics layout framework."""
     try:
+        # Verify index.html exists inside the resolved templates folder structure
+        target_file = os.path.join(TEMPLATES_DIR, "index.html")
+        if not os.path.exists(target_file):
+            logger.error(f"Missing file error: index.html not found in {TEMPLATES_DIR}")
+            raise FileNotFoundError()
+            
         return templates.TemplateResponse("index.html", {"request": request})
     except Exception as e:
         logger.critical(f"Fatal template synchronization breach: {str(e)}")
-        raise HTTPException(status_code=500, detail="Console pipeline alignment error.")
+        # Output the exact error path trace to the browser screen to verify placement metrics
+        return JSONResponse(
+            status_code=500, 
+            content={
+                "error": "Console pipeline alignment error.",
+                "resolved_templates_directory": TEMPLATES_DIR,
+                "diagnostics_msg": str(e)
+            }
+        )
 
 @app.post("/api/telemetry/sync")
 async def synchronize_game_telemetry(payload: TelemetryPayload):
-    """Real-time data telemetry synchronization processing scores, ranks, and performance matrices."""
-    logger.info(f"💾 [Telemetry Sync] Pilot: {payload.pilot_name} | Stars: {payload.current_score} | Rank: {payload.unlocked_rank} | Module: {payload.active_module}")
+    logger.info(f"💾 [Telemetry Sync] Pilot: {payload.pilot_name} | Stars: {payload.current_score}")
     return JSONResponse(status_code=200, content={"status": "synchronized", "response_code": "0x4F2A"})
