@@ -62,12 +62,8 @@ async def load_master_console_viewport(request: Request):
             logger.error(f"Missing file error: index.html not found in {TEMPLATES_DIR}")
             raise FileNotFoundError()
             
-        # FIX: Modern syntax uses name="index.html" and explicit context dict keyword.
-        # This completely short-circuits the Python 3.14 unhashable dict/tuple error.
-        return templates.TemplateResponse(
-            name="index.html", 
-            context={"request": request}
-        )
+        # FIX: Passing 'request' directly as the first positional parameter fixes the new signature requirement
+        return templates.TemplateResponse(request, "index.html")
     except Exception as e:
         logger.critical(f"Fatal template synchronization breach: {str(e)}")
         return JSONResponse(
