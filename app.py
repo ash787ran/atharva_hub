@@ -42,7 +42,7 @@ logger.info(f"Targeting static script asset path: {STATIC_DIR}")
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 app.mount("/images", StaticFiles(directory=IMAGES_DIR), name="images")
 
-# FIX: Explicitly wrapped inside a list sequence to prevent Starlette/FastAPI from hitting the tuple hash dictionary error on newer runtimes
+# Safely initialized with a list sequence wrapper
 templates = Jinja2Templates(directory=[TEMPLATES_DIR])
 
 class TelemetryPayload(BaseModel):
@@ -62,10 +62,14 @@ async def load_master_console_viewport(request: Request):
             logger.error(f"Missing file error: index.html not found in {TEMPLATES_DIR}")
             raise FileNotFoundError()
             
-        return templates.TemplateResponse("index.html", {"request": request})
+        # FIX: Modern syntax uses name="index.html" and explicit context dict keyword.
+        # This completely short-circuits the Python 3.14 unhashable dict/tuple error.
+        return templates.TemplateResponse(
+            name="index.html", 
+            context={"request": request}
+        )
     except Exception as e:
         logger.critical(f"Fatal template synchronization breach: {str(e)}")
-        # Output the exact error path trace to the browser screen to verify placement metrics
         return JSONResponse(
             status_code=500, 
             content={
