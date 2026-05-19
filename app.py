@@ -15,32 +15,39 @@ app = FastAPI(
     version="10.0.0"
 )
 
+# Absolute Core Path Resolution
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# SMART PATH SEARCH: Finds the directory regardless of case or folder nesting levels
 def locate_directory(dir_name):
+    """Surgically traces directories across deep repository branches on Linux/Render configurations."""
     options = [
         os.path.join(BASE_DIR, dir_name),
         os.path.join(BASE_DIR, dir_name.lower()),
-        os.path.join(BASE_DIR, dir_name.capitalize()),
         os.path.join(BASE_DIR, "atharva_hub", dir_name),
         os.path.join(BASE_DIR, "atharva_hub", dir_name.lower()),
+        os.path.join(os.path.dirname(BASE_DIR), dir_name),  # Step up one level if trapped in root
+        os.path.join(os.path.dirname(BASE_DIR), "atharva_hub", dir_name),
     ]
+    
     for path in options:
         if os.path.exists(path) and os.path.isdir(path):
-            logger.info(f"Successfully mapped {dir_name} to valid path: {path}")
+            logger.info(f"🎨 ASSET ALIGNMENT: Mapped '{dir_name}' to verified path: {path}")
+            # Log any files found inside for deep diagnosis
+            files = os.listdir(path)
+            logger.info(f"📂 Contents found inside '{dir_name}': {files[:5]} (Total: {len(files)} files)")
             return path
             
-    # Fallback if not found anywhere
-    default_path = os.path.join(BASE_DIR, dir_name.lower())
-    os.makedirs(default_path, exist_ok=True)
-    return default_path
+    # Absolute Fallback if missing anywhere (creates it to prevent crashes)
+    fallback = os.path.join(BASE_DIR, dir_name.lower())
+    os.makedirs(fallback, exist_ok=True)
+    logger.warning(f"⚠️ PATH MISSMATCH: '{dir_name}' not found. Fallback created at: {fallback}")
+    return fallback
 
 STATIC_DIR = locate_directory("static")
 TEMPLATES_DIR = locate_directory("templates")
 IMAGES_DIR = locate_directory("images")
 
-# Mount asset frameworks with strict explicit logging diagnostics
+# Mount asset frameworks with global scoping aliases
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 app.mount("/images", StaticFiles(directory=IMAGES_DIR), name="images")
 
@@ -55,7 +62,7 @@ class TelemetryPayload(BaseModel):
 
 @app.get("/", response_class=HTMLResponse)
 async def load_master_console_viewport(request: Request):
-    """Serve the central graphics layout framework safely."""
+    """Serve the central high-fidelity layout framework."""
     try:
         return templates.TemplateResponse(request, "index.html")
     except Exception as e:
