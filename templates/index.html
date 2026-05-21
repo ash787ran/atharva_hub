@@ -98,9 +98,6 @@
         #damage-flash { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(255, 0, 0, 0.25); z-index: 999998; pointer-events: none; opacity: 0; transition: opacity 0.1s ease; }
         #equipped-ship-hud { width: 130px; height: auto; margin-top: 15px; animation: pulseDelta 1.5s infinite alternate; }
 
-        /* ==========================================================================
-           HIGH-TECH AI COPILOT DRAWING MATRIX SLIDER HUD
-           ========================================================================== */
         #ai-chat-drawer {
             position: fixed; top: 0; right: -420px; width: 400px; height: 100vh;
             background: rgba(3, 7, 18, 0.97); border-left: 3px solid var(--neon-blue);
@@ -144,7 +141,7 @@
         <button style="background:none; border:none; color:#64748b; font-size:1.5rem; cursor:pointer;" onclick="window.ArcadeInstanceEngine.toggleChatTerminalDrawer()">✕</button>
     </div>
     <div class="chat-messages-container" id="chat-scroller-node">
-        <div class="chat-bubble ai">Greetings, Captain Atharva! Onboard systems are standing by. Ask me anything about planets, space ships, or core science parameters! 🚀</div>
+        <div class="chat-bubble ai" style="cursor:pointer;" onclick="window.ArcadeInstanceEngine.voice.speak('Onboard computers fully functional, Captain!')">Greetings, Captain Atharva! Onboard systems are standing by. Ask me anything about planets, space ships, or core science parameters! 🚀 (Tap to test speaker)</div>
     </div>
     <div class="chat-input-row">
         <input type="text" id="chat-input-box-node" class="chat-input-field" placeholder="Ask your copilot a question...">
@@ -251,13 +248,73 @@
 </div>
 
 <script>
+    const ARCADE_QUESTION_DATABASE = {
+        phonics: [
+            { query: "Which word rhymes with the flying 'CAT'?", choices: ["BAT", "DOG", "SUN", "PIG"], target: "BAT", reward: 10 },
+            { query: "Which word rhymes with the hot blazing 'SUN'?", choices: ["RUN", "BED", "LOG", "CAT"], target: "RUN", reward: 10 },
+            { query: "Which word rhymes with a red jumping 'FOX'?", choices: ["BOX", "HEN", "PIG", "SIT"], target: "BOX", reward: 10 },
+            { query: "Which word rhymes with the sleeping 'BEAR'?", choices: ["CHAIR", "FISH", "DUCK", "TREE"], target: "CHAIR", reward: 10 },
+            { query: "Which word rhymes with the cold wet 'RAIN'?", choices: ["TRAIN", "BOAT", "COAT", "STAR"], target: "TRAIN", reward: 10 },
+            { query: "Which word rhymes with a small baking 'CAKE'?", choices: ["LAKE", "MOON", "BIRD", "FROG"], target: "LAKE", reward: 10 },
+            { query: "Find the missing starting sound logic: '____-P-P-L-E'", choices: ["A", "B", "M", "T"], target: "A", reward: 10 },
+            { query: "Find the missing sound string for a sailing '____-O-A-T'", choices: ["B", "S", "R", "P"], target: "B", reward: 10 },
+            { query: "Find the missing sound for a swimming '____-I-S-H'", choices: ["F", "L", "M", "D"], target: "F", reward: 10 },
+            { query: "Find the missing sound for a morning '____-I-L-K'", choices: ["M", "B", "H", "G"], target: "M", reward: 10 },
+            { query: "Find the missing sound for a fast racing '____-R-A-I-N'", choices: ["T", "P", "S", "C"], target: "T", reward: 10 },
+            { query: "Identify the high-frequency sight word block: 'T-H-____-Y'", choices: ["E", "A", "O", "I"], target: "E", reward: 10 },
+            { query: "Choose the digraph blend that starts the word '____-I-P-S' (Yum!)", choices: ["CH", "SH", "TH", "WH"], target: "CH", reward: 15 },
+            { query: "Choose the digraph blend that starts the sailing '____-I-P'", choices: ["SH", "CH", "TH", "WH"], target: "SH", reward: 15 },
+            { query: "Choose the blend that starts the giant night '____-W-A-L-E'", choices: ["WH", "SH", "CH", "PH"], target: "WH", reward: 15 },
+            { query: "What blend makes the sound at the start of a counting '____-R-E-E'?", choices: ["TH", "CH", "SH", "WH"], target: "TH", reward: 10 },
+            { query: "Atharva is holding a glowing, magical ____ book!", choices: ["storybook", "math", "cooking", "music"], target: "storybook", reward: 15 },
+            { query: "There are friendly green ____ floating inside space labs!", choices: ["aliens", "bicycles", "kittens", "trains"], target: "aliens", reward: 15 },
+            { query: "Atharva is wearing a cool, sharp blue ____ cap!", choices: ["cap", "shoe", "sock", "belt"], target: "cap", reward: 10 },
+            { query: "Captain Atharva fires a blazing neon ____ beam to clear space debris!", choices: ["laser", "water", "paint", "ice"], target: "laser", reward: 15 },
+            { query: "Atharva jumps into his lightning-fast ____ ship to explore Mars!", choices: ["rocket", "car", "wagon", "bicycle"], target: "rocket", reward: 15 }
+        ],
+        telemetry: [
+            { query: "Which tall, long-necked mammal has yellow spots?", choices: ["Giraffe", "Elephant", "Zebra", "Cheetah"], target: "Giraffe", reward: 10 },
+            { query: "Which giant animal has floppy ears and a huge trunk?", choices: ["Elephant", "Rhino", "Hippo", "Giraffe"], target: "Elephant", reward: 10 },
+            { query: "Which fast wild cat has sharp black racing stripes?", choices: ["Tiger", "Lion", "Bear", "Deer"], target: "Tiger", reward: 10 },
+            { query: "Which black and white bird swims fast but cannot fly?", choices: ["Penguin", "Eagle", "Parrot", "Duck"], target: "Penguin", reward: 10 },
+            { query: "Which clever animal loves to swing on trees and eat bananas?", choices: ["Monkey", "Tiger", "Lion", "Hippo"], target: "Monkey", reward: 10 },
+            { query: "Which ocean creature has eight long tentacles?", choices: ["Octopus", "Shark", "Whale", "Dolphin"], target: "Octopus", reward: 10 },
+            { query: "Which animal hops around holding its baby inside a belly pouch?", choices: ["Kangaroo", "Koala", "Rabbit", "Bear"], target: "Kangaroo", reward: 15 },
+            { query: "What blue planet are we investigating right now?", choices: ["Earth", "Mars", "Jupiter", "Mercury"], target: "Earth", reward: 10 },
+            { query: "What hot, giant fire star sits at the center of our solar system?", choices: ["The Sun", "The Moon", "Mars", "Pluto"], target: "The Sun", reward: 15 },
+            { query: "Which red, dusty planet is known as the Red Planet?", choices: ["Mars", "Venus", "Neptune", "Saturn"], target: "Mars", reward: 10 },
+            { query: "What bright rock loops around Earth and glows in the night sky?", choices: ["The Moon", "The Sun", "A Comet", "An Asteroid"], target: "The Moon", reward: 10 },
+            { query: "Which giant planet is famous for having beautiful ice rings spinning around it?", choices: ["Saturn", "Jupiter", "Mars", "Earth"], target: "Saturn", reward: 15 },
+            { query: "What cold, white frozen crystal falls from the winter sky?", choices: ["Snow", "Rain", "Sand", "Leaves"], target: "Snow", reward: 10 },
+            { query: "What colorful arc appears in the sky after a fresh rain storm?", choices: ["Rainbow", "Lightning", "Cloud", "Meteor"], target: "Rainbow", reward: 10 },
+            { query: "What green plants grow on trees to soak up bright sunlight?", choices: ["Leaves", "Flowers", "Apples", "Roots"], target: "Leaves", reward: 10 },
+            { query: "What do bees collect from flowers to make sweet food in their hives?", choices: ["Nectar", "Water", "Seeds", "Mud"], target: "Nectar", reward: 15 }
+        ]
+    };
+
+    /* ==========================================================================
+       VOCAL SYNTHESIS SPEECH LAYER RECALIBRATION (BUILT FOR THE CHAT CLUSTER)
+       ========================================================================== */
     class SpeechNarratorController {
         constructor() { this.synth = window.speechSynthesis; }
         speak(text) {
             if (!this.synth) return;
-            this.synth.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.rate = 0.95; utterance.pitch = 1.1;
+            this.synth.cancel(); // Drop older sound queues immediately
+            
+            // Clean markdown asterisks and formatting out so the speech engine doesn't read them aloud
+            const cleanText = text.replace(/\*/g, '');
+            
+            const utterance = new SpeechSynthesisUtterance(cleanText);
+            
+            // Adaptive Voice Target Selector
+            let voices = this.synth.getVoices();
+            // Attempt to choose a high-fidelity english speaker if cached
+            let targetVoice = voices.find(v => v.lang.includes('en-US') && v.name.includes('Google')) || voices.find(v => v.lang.startsWith('en'));
+            if(targetVoice) utterance.voice = targetVoice;
+
+            utterance.rate = 0.92; // Slightly slowed, ideal for an assertive, encouraging 6yo speech rhythm
+            utterance.pitch = 1.15; // Brighter pitch to emulate a premium friendly co-pilot robot
+            
             this.synth.speak(utterance);
         }
     }
@@ -347,12 +404,17 @@
             document.getElementById('math-input-response-box').addEventListener('keypress', (e) => { if(e.key === 'Enter') this.processMathSubmission(); });
             document.getElementById('chat-input-box-node').addEventListener('keypress', (e) => { if(e.key === 'Enter') this.dispatchPilotChatMessage(); });
             this.startLoop(); this.renderHangarShopMatrix();
+            
+            // Warm up browser audio list structures
+            if (window.speechSynthesis) window.speechSynthesis.getVoices();
         }
+        
         startLoop() { const tick = () => { this.graphics.render(); requestAnimationFrame(tick); }; requestAnimationFrame(tick); }
         
-        /* CHAT BOT CONTROL CORES */
         toggleChatTerminalDrawer() {
             document.getElementById('ai-chat-drawer').classList.toggle('open');
+            // Force vocalizing greeting on menu open to establish interactive audio hook
+            this.voice.speak("System Copilot standing by, Captain Atharva!");
         }
         
         async dispatchPilotChatMessage() {
@@ -364,7 +426,10 @@
             box.innerHTML += `<div class="chat-bubble user">${msg}</div>`;
             box.scrollTop = box.scrollHeight;
             
-            // Loading bubble asset indicator
+            // FIXED SPEECH TRICK: Fire an immediate empty audio chirp attached directly to this click event.
+            // This forces the browser to mark our tab as 'user-allowed for voice audio', bypassing future network barriers.
+            this.voice.speak(""); 
+
             const loadId = "load-" + Date.now();
             box.innerHTML += `<div class="chat-bubble ai" id="${loadId}">Transmission processing... 🛰️</div>`;
             box.scrollTop = box.scrollHeight;
@@ -379,7 +444,7 @@
                 document.getElementById(loadId).innerText = data.response;
                 box.scrollTop = box.scrollHeight;
                 
-                // Make the voice narrator speak the copilot's answer back out loud
+                // Now the browser allows it cleanly on the callback response loop!
                 this.voice.speak(data.response);
             } catch(e) {
                 document.getElementById(loadId).innerText = "Subspace connection lost. Syncing backup wires! ⚡";
@@ -492,9 +557,6 @@
         closeStadiumOverlayPortal() { document.getElementById('stadium-curtain-overlay').classList.remove('active'); this.refreshView(); }
     }
 
-    /* ==========================================================================
-       BOOT LIFECYCLE CONTROLLER
-       ========================================================================== */
     const logs = [
         "KERNEL: Launching Atharva Unified Simulation Matrix...",
         "NET: Synchronizing standalone pipeline endpoints...",
